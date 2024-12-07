@@ -10,7 +10,7 @@ i2c = machine.I2C(id=1, sda=Pin(14), scl=Pin(15)) #id=channel
 bmp = BMP280(i2c)
 
 BUFFER_SIZE = 10
-SENSOR_READ_OCCURENCE = 20 # 5 minutes
+SENSOR_READ_OCCURENCE = 300 # 5 minutes
 SENSOR_READ_DELAY = 1
 
 ID = "mqtt_client"
