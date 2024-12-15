@@ -32,7 +32,7 @@ def on_message(client, userdata, message):
     
     try:
         value = float(message.payload.decode("utf-8"))
-        point = Point(BUCKET).field("value", value)
+        point = Point(BUCKET).field(message.topic, value)
         userdata.write(bucket=BUCKET, record=point)
     except ValueError:
         print("Received non-numeric data, skipping write to InfluxDB")
