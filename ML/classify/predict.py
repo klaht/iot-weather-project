@@ -1,7 +1,6 @@
 import tensorflow as tf
 import pickle
 import os
-from sklearn.preprocessing import StandardScaler
 
 import paho.mqtt.client as mqtt
 
@@ -12,10 +11,12 @@ MQTT_PORT = int(os.getenv('MQTT_PORT'))
 
 # Needed for predicting
 model = tf.keras.models.load_model('classify.h5', compile=False)
-scaler = StandardScaler()
-with open('classify_hotEncoder.pkl', 'rb') as f:
+
+with open('encoder.pkl', 'rb') as f:
 	encoder = pickle.load(f)
 
+with open('scaler.pkl', 'rb') as f:
+	scaler = pickle.load(f)
 
 
 
