@@ -11,7 +11,7 @@ MQTT_PORT = int(os.getenv('MQTT_PORT'))
 
 
 # Needed for predicting
-model = tf.keras.models.load_model('classify.h5')
+model = tf.keras.models.load_model('classify.h5', compile=False)
 scaler = StandardScaler()
 with open('classify_hotEncoder.pkl', 'rb') as f:
 	encoder = pickle.load(f)
