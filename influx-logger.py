@@ -31,11 +31,27 @@ def on_message(client, userdata, message):
     print("received message =",str(message.payload.decode("utf-8")))
     
     try:
-        value = float(message.payload.decode("utf-8"))
-        point = Point(BUCKET).field(message.topic, value)
-        userdata.write(bucket=BUCKET, record=point)
-    except ValueError:
-        print("Received non-numeric data, skipping write to InfluxDB")
+        payload = message.payload.decode("utf-8")
+        values = payload.split(",")
+        
+        if len(values) == 1:
+            # only value, no timestamp
+            value = float(values[0])
+            point = Point(BUCKET).field(message.topic, value)
+            userdata.write(bucket=BUCKET, record=point)
+        elif len(values) == 2:
+            # timestamp also given. posted in its own field in InfluxDB
+            timestamp, numericvalue = values
+            timestamp = int(timestamp)
+            numericvalue = float(numericvalue)
+
+            point = Point(BUCKET).field(message.topic, numericvalue).field("timestamp", timestamp)
+            userdata.write(bucket=BUCKET, record=point)
+        else:
+            print("Unexpected payload format")
+    except Exception as e:
+        print(f"Failed to write to InfluxDB: {e}")
+
 
 
 def main():
