@@ -10,11 +10,11 @@ i2c = machine.I2C(id=1, sda=Pin(14), scl=Pin(15)) #id=channel
 bmp = BMP280(i2c)
 
 BUFFER_SIZE = 10
-SENSOR_READ_OCCURENCE = 300 # 5 minutes
+SENSOR_READ_OCCURENCE = 30 # 5 minutes
 SENSOR_READ_DELAY = 1
 
 ID = "mqtt_client"
-MQTT_BROKER = "34.88.121.143"
+MQTT_BROKER = "34.88.17.114"
 TEMPERATURE_MEDIAN_TOPIC = "temperature"
 
 
@@ -36,11 +36,24 @@ async def read_sensor():
             pressure_data_buffer.append(bmp.pressure)
             
             await asyncio.sleep(SENSOR_READ_DELAY)
+            
+        temperature_median = str(median(temperature_data_buffer))
+        pressure_median = median(pressure_data_buffer)
+        timestamp = time.time()
         
-        client.publish(TEMPERATURE_MEDIAN_TOPIC, str(median(temperature_data_buffer)))
-        client.publish(PRESSURE_MEDIAN_TOPIC, str(median(pressure_data_buffer)))
-
-        #deepsleep(30000)
+        client.publish(
+            TEMPERATURE_MEDIAN_TOPIC,
+            f"{timestamp}, {temperature_median}"
+        )
+        
+        client.publish(
+            PRESSURE_MEDIAN_TOPIC,
+            f"{timestamp}, {pressure_median}"
+        )
+        
+        
+        print(f"Sent temperature data: {timestamp}, {temperature_median}")
+        print(f"Sent pressure data: {timestamp}, {pressure_median}")
         
         await asyncio.sleep(SENSOR_READ_OCCURENCE)
 
